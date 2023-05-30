@@ -14,27 +14,25 @@ function App() {
 
   const[isCalculated,setIsCalculated] = useState(false);
   
-  const submit = async (event) => {
+  const submit = async (event) => 
+  {
     event.preventDefault();
     setIsCalculated(true);
-  
-    for (const transaction of userTransaction) {
-      const { name, amount } = transaction;
-  
-      const res = await fetch('https://reactfirebasewebsite-675ef-default-rtdb.firebaseio.com/userDataRecords.json', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          amount,
-        }),
-      });
-      // Handle the response if needed
-    }
-  };
-  
+    const{ name,amount}=userTransaction;
+    const res =fetch('https://reactfirebasewebsite-675ef-default-rtdb.firebaseio.com/userDataRecords.json',
+    {
+    method:"POST",
+    headers:
+    {
+        "Content-Type":"application/json",
+    },
+    body:JSON.stringify({
+        name,
+        amount,  
+    }),
+}
+    );
+}
 
 const addMore= ()=>
   {
@@ -42,87 +40,57 @@ const addMore= ()=>
     setUserTransaction([...userTransaction,newTransaction]) /*HERE SATATE IS GETTING UPDATED*/ 
     setIsCalculated(false);
   }
-  const removeTransaction = async (index) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this transaction?');
-    if (confirmDelete) {
-      const data = [...userTransaction];
-      data.splice(index, 1);
-      setUserTransaction(data);
-      setIsCalculated(false);
-  
-      // Delete the transaction from the database
-      try {
-        const res = await fetch(`https://reactfirebasewebsite-675ef-default-rtdb.firebaseio.com/userDataRecords/${index}.json`, {
-          method: "DELETE",
-        });
-        // Handle the response if needed
-      } catch (error) {
-        console.error('Error deleting transaction:', error);
-      }
-    }
-  };
-  
- 
-  const handleFormChange = (event, index) => {
-    const { name, value } = event.target;
-    const updatedUserTransaction = [...userTransaction]; // Create a copy of the userTransaction array
-    updatedUserTransaction[index] = {
-      ...updatedUserTransaction[index], // Copy the existing transaction object
-      [name]: value, // Update the specific property (name or amount)
-    };
-    if (name === 'name' && value.trim().length < 2) {
-      window.alert('Name should be at least 2 characters long');
-      updatedUserTransaction[index].name = ''; // Clear the name field
-    } else if (name === 'amount' && (!value || isNaN(Number(value)) || Number(value) < 0)) {
-      window.alert('Amount should be a positive number');
-      updatedUserTransaction[index].amount = ''; // Clear the amount field
-    } else {
-      setUserTransaction(updatedUserTransaction);
-      setIsCalculated(false);
-    }
-    if(event.target.name === 'name')
-    {
-     const existingUser=userTransaction.find
-     (trans=>trans.name.toLowerCase() === event.target.value.toLowerCase())
-  
-     if(existingUser)     /*IF existingUser is true then it will display that error else*/
-    {
-     alert("PLEASE SELECT ANOTHER RNAME");
-     event.target.value=''
-     return;
-    }
-   }
-    setUserTransaction(updatedUserTransaction);
+
+  const removeTransaction =(index)=>{
+     console.log(index);
+    const data= [...userTransaction];
+    data.splice(index,1);
+    setUserTransaction(data);
     setIsCalculated(false);
-  };
-  
+
+      
+  }
+  let name,amount;
+  const handleFormChange =(event,index)=>
+  {
+    name=event.target.name;
+    value=event.target.value;
+    /*console.log(event.target.value,index); /* isme baas index ke saath name aur amount dikhega means 0:raju 0:222*/
+    /*console.log(event.target.name);       /*yae 0:raju name AND 0:222 amount dikhega*/ 
+    /*const data=[...userTransaction,[name]: value];*/     /*pahila data mae state ko lo */
+    setIsCalculated(false);
+    if(event.target.name === 'name')
+   {
+    const existingUser=userTransaction.find
+    (trans=>trans.name.toLowerCase() === event.target.value.toLowerCase())
+ 
+    if(existingUser)     /*IF existingUser is true then it will display that error else*/
+   {
+    alert("PLEASE SELECT ANOTHER RNAME");
+    event.target.value=''
+    return;
+   }
+  }
+   
+data[index][event.target.name]=event.target.value;    /*yae dikhega iss prakar 0 name raju  0 amount 222 */
+setUserTransaction({...userTransaction,[name]: value});
+console.log(userTransaction);
+
+   
+  }
 
   const isFormValid = () =>
   !userTransaction.some((trans) => !trans.name || !trans.amount);
 
 
-  const calculationResult = [];
-
-calcExpense(userTransaction).forEach((value, key) => {
-  calculationResult.push({
-    name: key,
-    transactions: value,
-  });
-});
-
-const saveCalculationResult = async () => {
-  const res = await fetch('https://reactfirebasewebsite-675ef-default-rtdb.firebaseio.com/calculationResult.json', {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(calculationResult),
-  });
-  // Handle the response if needed
-};
-
-saveCalculationResult();
-
+  const calculationResult =[];
+calcExpense(userTransaction).forEach((value,key)=>
+     calculationResult.push(
+     { name: key,
+      transactions:value
+    }
+    ));
+    console.log(calculationResult);
     
   
 
