@@ -1,6 +1,7 @@
 import './App.css';
 import { useState } from "react";
 import { calcExpense } from './expense';
+import db from "./FbConfig.js";
 
 function App() {
 {
